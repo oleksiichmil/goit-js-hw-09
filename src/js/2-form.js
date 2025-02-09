@@ -1,50 +1,49 @@
-const feedbackForm = document.querySelector('.feedback-form');
+const STORAGE_KEY = 'feedback-form-state';
+
 
 let formData = {
-  email: '',
-  message: '',
-};
-const { email, message } = feedbackForm.elements;
-
-const checkFormData = () => {
-  try {
-    if (localStorage.length === 0) {
-      return;
-    }
-    const formDataFromLS = JSON.parse(
-      localStorage.getItem('feedback-form-state')
-    );
-
-    formData = formDataFromLS;
-
-    for (const key in formDataFromLS) {
-      feedbackForm.elements[key].value = formDataFromLS[key];
-    }
-  } catch (err) {
-    console.log(err);
-  }
-};
-checkFormData();
-
-const formDataInput = event => {
-  formData = { email: email.value, message: message.value };
-
-  localStorage.setItem('feedback-form-state', JSON.stringify(formData));
+    email: '',
+    message: ''
 };
 
-const formDataSubmit = event => {
+const form = document.querySelector('.feedback-form');
+const emailInput = document.querySelector('[name = "email"]');
+const messageInput = document.querySelector('[name = "message"]');
+
+const saveToLocalStorage = () => {
+  localStorage.setItem(STORAGE_KEY, JSON.stringify(formData));
+};
+
+const updateFormData = event => {
+ 
+  formData[event.target.name] = event.target.value.trim();
+  saveToLocalStorage();
+};
+
+
+emailInput.addEventListener('input', updateFormData);
+messageInput.addEventListener('input', updateFormData);
+
+const savedData = localStorage.getItem(STORAGE_KEY);
+if (savedData) {
+  formData = JSON.parse(savedData);
+  emailInput.value = formData.email;
+  messageInput.value = formData.message;
+}
+
+
+form.addEventListener('submit', event => {
   event.preventDefault();
-  const { currentTarget: formEl } = event;
-  console.log({ email: email.value, message: message.value });
 
-  if (email.value === '' || message.value === '') {
-    return alert('Fill please all fields');
+  if (!formData.email || !formData.message) {
+    alert('Fill please all fields!');
+    return;
   }
 
-  formEl.reset();
-  localStorage.removeItem('feedback-form-state');
-  formData = {};
-};
+  console.log('Form submitted:', formData);
 
-feedbackForm.addEventListener('input', formDataInput);
-feedbackForm.addEventListener('submit', formDataSubmit);
+ 
+  localStorage.removeItem(STORAGE_KEY);
+  formData = { email: '', message: '' };
+  form.reset();
+});

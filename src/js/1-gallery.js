@@ -1,4 +1,5 @@
-import SimpleLightbox from 'simplelightbox';
+// import SimpleLightbox from 'simplelightbox';
+// import 'simplelightbox/dist/simple-lightbox.min.css';
 
 const images = [
   {
@@ -66,26 +67,36 @@ const images = [
   },
 ];
 
-const createGalleryTemplate = images =>
-  `<li class="gallery-item">
-    <a class="gallery-link"
-    href="${images.original}">
-        <img 
-            class="gallery-image" 
-            src="${images.preview}" 
-            alt="${images.description}" 
-        />
-    </a>
-  </li>`;
+const container = document.querySelector('.gallery');
+function templateImage(image) {
+    return `<li class="gallery-item">
+  <a class="gallery-link" href=${image.original}>
+    <img
+      class="gallery-image"
+      src="${image.preview}"
+      alt="${image.description}"
+    />
+  </a>
+</li>
+`
+};
 
-const galleryCardArray = images
-  .map(image => createGalleryTemplate(image))
-  .join('');
+function templateImages(images) {
+  return images.map(templateImage).join('');
+}
 
-const galleryListEl = document.querySelector('.gallery');
-galleryListEl.innerHTML = galleryCardArray;
+const markup = templateImages(images);
+container.innerHTML = markup;
+// console.log(markup);
 
-new SimpleLightbox('.gallery a', {
-  captionsData: 'alt',
-  captionDelay: 250,
+import SimpleLightbox from "simplelightbox";
+
+import "simplelightbox/dist/simple-lightbox.min.css";
+
+
+const lightbox = new SimpleLightbox(".gallery a", {
+  captions: true,
+  captionsData: "alt",
+  captionDelay: 250
 });
+
